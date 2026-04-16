@@ -1,1 +1,1 @@
-select *from Students
+select * from dbo.Students;
