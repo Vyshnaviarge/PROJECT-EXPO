@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block title %}Add Student - Student Management System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-lg">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-user-plus"></i> Student Registration Form
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="/submit" id="studentForm" novalidate>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="name" 
+                                    name="name" 
+                                    placeholder="Enter student name"
+                                    required
+                                    minlength="2"
+                                    maxlength="100"
+                                    pattern="[a-zA-Z\s]*"
+                                    title="Name can only contain letters and spaces"
+                                >
+                                <small class="text-muted d-block mt-1">
+                                    <i class="fas fa-info-circle"></i> 2-100 characters, letters and spaces only
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                                <input 
+                                    type="email" 
+                                    class="form-control" 
+                                    id="email" 
+                                    name="email" 
+                                    placeholder="example@domain.com"
+                                    required
+                                >
+                                <small class="text-muted d-block mt-1">
+                                    <i class="fas fa-info-circle"></i> Enter a valid email address
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="course" class="form-label">Course <span class="text-danger">*</span></label>
+                                <select 
+                                    class="form-select" 
+                                    id="course" 
+                                    name="course" 
+                                    required
+                                >
+                                    <option value="">-- Select a course --</option>
+                                    <option value="Computer Science">Computer Science</option>
+                                    <option value="Information Technology">Information Technology</option>
+                                    <option value="Business Administration">Business Administration</option>
+                                    <option value="Engineering">Engineering</option>
+                                    <option value="Liberal Arts">Liberal Arts</option>
+                                </select>
+                                <small class="text-muted d-block mt-1">
+                                    <i class="fas fa-info-circle"></i> Select from available courses
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                                <input 
+                                    type="tel" 
+                                    class="form-control" 
+                                    id="phone" 
+                                    name="phone" 
+                                    placeholder="123-456-7890 or +1234567890"
+                                    required
+                                    pattern="[\d\s\-\+\(\)]{9,15}"
+                                    title="Enter a valid phone number (9-15 digits)"
+                                >
+                                <small class="text-muted d-block mt-1">
+                                    <i class="fas fa-info-circle"></i> 9-15 digits, can include spaces, dashes, parentheses
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="gender" class="form-label">Gender <span class="text-danger">*</span></label>
+                                <select 
+                                    class="form-select" 
+                                    id="gender" 
+                                    name="gender"
+                                    required
+                                >
+                                    <option value="">-- Select gender --</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <small class="text-muted d-block mt-1">
+                                    <i class="fas fa-info-circle"></i> Select your gender
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="dob" class="form-label">Date of Birth <span class="text-danger">*</span></label>
+                                <input 
+                                    type="date" 
+                                    class="form-control" 
+                                    id="dob" 
+                                    name="dob"
+                                    required
+                                >
+                                <small class="text-muted d-block mt-1">
+                                    <i class="fas fa-info-circle"></i> Must be 16 years or older
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address <span class="text-danger">*</span></label>
+                        <textarea 
+                            class="form-control" 
+                            id="address" 
+                            name="address" 
+                            placeholder="Enter your residential address"
+                            rows="3"
+                            required
+                            maxlength="500"
+                        ></textarea>
+                        <small class="text-muted d-block mt-1">
+                            <i class="fas fa-info-circle"></i> Maximum 500 characters
+                        </small>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save"></i> Register Student
+                        </button>
+                        <a href="/view" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-list"></i> View All Students
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('studentForm').addEventListener('submit', function(e) {
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const course = document.getElementById('course').value;
+        const phone = document.getElementById('phone').value.trim();
+        const gender = document.getElementById('gender').value;
+        const dob = document.getElementById('dob').value;
+        const address = document.getElementById('address').value.trim();
+
+        // Check if all fields are filled
+        if (!name || !email || !course || !phone || !gender || !dob || !address) {
+            e.preventDefault();
+            alert('❌ Please fill in all required fields!');
+            return false;
+        }
+
+        // Name validation
+        if (name.length < 2) {
+            e.preventDefault();
+            alert('❌ Name must be at least 2 characters long!');
+            return false;
+        }
+
+        if (name.length > 100) {
+            e.preventDefault();
+            alert('❌ Name cannot exceed 100 characters!');
+            return false;
+        }
+
+        if (!/^[a-zA-Z\s]*$/.test(name)) {
+            e.preventDefault();
+            alert('❌ Name can only contain letters and spaces!');
+            return false;
+        }
+
+        // Phone validation
+        const phoneClean = phone.replace(/\s/g, '').replace(/-/g, '').replace(/\(/g, '').replace(/\)/g, '');
+        if (!/^\+?1?\d{9,15}$/.test(phoneClean)) {
+            e.preventDefault();
+            alert('❌ Please enter a valid phone number (9-15 digits)!');
+            return false;
+        }
+
+        // DOB validation
+        const dobDate = new Date(dob);
+        const today = new Date();
+        
+        if (dobDate > today) {
+            e.preventDefault();
+            alert('❌ Date of birth cannot be in the future!');
+            return false;
+        }
+
+        // Calculate age
+        let age = today.getFullYear() - dobDate.getFullYear();
+        const monthDiff = today.getMonth() - dobDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dobDate.getDate())) {
+            age--;
+        }
+
+        if (age < 16) {
+            e.preventDefault();
+            alert('❌ Student must be at least 16 years old!');
+            return false;
+        }
+
+        // Address validation
+        if (address.length > 500) {
+            e.preventDefault();
+            alert('❌ Address cannot exceed 500 characters!');
+            return false;
+        }
+
+        // If all validations pass, form will be submitted
+    });
+
+    // Real-time validation feedback
+    document.getElementById('name').addEventListener('blur', function() {
+        if (this.value && !/^[a-zA-Z\s]*$/.test(this.value)) {
+            this.classList.add('is-invalid');
+        } else {
+            this.classList.remove('is-invalid');
+        }
+    });
+
+    document.getElementById('phone').addEventListener('blur', function() {
+        const phoneClean = this.value.replace(/\s/g, '').replace(/-/g, '').replace(/\(/g, '').replace(/\)/g, '');
+        if (this.value && !/^\+?1?\d{9,15}$/.test(phoneClean)) {
+            this.classList.add('is-invalid');
+        } else {
+            this.classList.remove('is-invalid');
+        }
+    });
+
+    document.getElementById('dob').addEventListener('blur', function() {
+        if (this.value) {
+            const dobDate = new Date(this.value);
+            const today = new Date();
+            let age = today.getFullYear() - dobDate.getFullYear();
+            const monthDiff = today.getMonth() - dobDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dobDate.getDate())) {
+                age--;
+            }
+            if (age < 16 || dobDate > today) {
+                this.classList.add('is-invalid');
+            } else {
+                this.classList.remove('is-invalid');
+            }
+        }
+    });
+</script>
+{% endblock %}

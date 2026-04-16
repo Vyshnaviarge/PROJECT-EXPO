@@ -1,0 +1,96 @@
+import os
+from flask import Flask, render_template, request, redirect, flash
+import pyodbc
+import re
+from datetime import datetime
+
+app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-here')
+
+# Get database connection from environment or use default
+db_connection_string = os.environ.get('DATABASE_URL', 
+    r'DRIVER={ODBC Driver 17 for SQL Server};'
+    r'SERVER=localhost\SQLEXPRESS;'
+    r'DATABASE=StudentDB;'
+    r'Trusted_Connection=yes;'
+)
+
+try:
+    conn = pyodbc.connect(db_connection_string)
+    cursor = conn.cursor()
+except pyodbc.Error as e:
+    print(f"Database connection error: {e}")
+
+@app.route('/edit/<int:student_id>')
+def edit_student(student_id):
+    cursor.execute("SELECT * FROM Students WHERE ID = ?", (student_id,))
+    student = cursor.fetchone()
+
+    if student:
+        return render_template('edit_student.html', student=student)
+    else:
+        flash('Student not found', 'error')
+        return redirect('/view')
+
+@app.route('/edit/<int:student_id>', methods=['POST'])
+def update_student(student_id):
+    cursor.execute("SELECT * FROM Students WHERE ID = ?", (student_id,))
+    student = cursor.fetchone()
+
+    if student:
+        name = request.form['name']
+        email = request.form['email']
+        course = request.form['course']
+        phone = request.form['phone']
+        gender = request.form['gender']
+        dob = request.form['dob']
+        address = request.form['address']
+
+        if not name or not email or not course or not phone or not gender or not dob or not address:
+            flash('Please fill in all required fields', 'error')
+            return redirect('/edit/' + str(student_id))
+
+        if len(name) < 2:
+            flash('Name must be at least 2 characters long', 'error')
+            return redirect('/edit/' + str(student_id))
+
+        if not re.match(r'[a-zA-Z\s]*$', name):
+            flash('Name can only contain letters and spaces', 'error')
+            return redirect('/edit/' + str(student_id))
+
+        phone_clean = phone.replace(/\s/g, '').replace(/-/g, '').replace(/\(/g, '').replace(/\)/g, '')
+        if not re.match(r'^\+?1?\d{9,15}$', phone_clean):
+            flash('Please enter a valid phone number (9-15 digits)', 'error')
+            return redirect('/edit/' + str(student_id))
+
+        dob_date = datetime.strptime(dob, '%Y-%m-%d')
+        today = datetime.today()
+        
+        if dob_date > today:
+            flash('Date of birth cannot be in the future', 'error')
+            return redirect('/edit/' + str(student_id))
+
+        age = today.year - dob_date.year
+        month_diff = today.month - dob_date.month
+        if month_diff < 0 or (month_diff == 0 and today.day < dob_date.day):
+            age -= 1
+
+        if age < 16:
+            flash('Student must be at least 16 years old', 'error')
+            return redirect('/edit/' + str(student_id))
+
+        if len(address) > 500:
+            flash('Address cannot exceed 500 characters', 'error')
+            return redirect('/edit/' + str(student_id))
+
+        cursor.execute("UPDATE Students SET Name = ?, Email = ?, Course = ?, Phone = ?, Gender = ?, DOB = ?, Address = ? WHERE ID = ?", 
+            (name, email, course, phone, gender, dob, address, student_id))
+        conn.commit()
+        flash('Student updated successfully', 'success')
+        return redirect('/view')
+    else:
+        flash('Student not found', 'error')
+        return redirect('/view')
+
+if __name__ == '__main__':
+    app.run(debug=False)
